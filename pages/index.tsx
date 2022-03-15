@@ -2,21 +2,23 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import {default as Emo} from '../emoji/Emoji'; 
+import { default as Emo } from '../emoji/Emoji';
 import styles from '../styles/Home.module.css'
+const Emoji = new Emo()
 
 const Home: NextPage = () => {
   const router = useRouter()
-  const query = router.query
-  const Emoji = new Emo()
-  const emojis = Emoji.get()
+  const emjQuery = router.query.emj as string
 
   const [emojiCeil, setSize] = useState<{ box: number, num: number }>({ box: 100, num: 3 })
   const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
   useEffect(() => {
-    const q = query.emj as string
-    if (q) setState(s => { return { ...s, emoji: emojis[Number(q)] } })
+    console.log("emoji", emjQuery)
+    if (emjQuery) setState({ open: false, emoji: Emoji.getAt(emjQuery) })
+  }, [emjQuery])
+  useEffect(() => {
     const w = window["innerWidth"] * 0.8
+    console.log("w", w)
     if (w < 450) {
       return //そのまま
     } else if (w < 900) {
@@ -28,10 +30,10 @@ const Home: NextPage = () => {
       const num = 5
       return setSize({ box: Math.floor(w / num), num })
     }
-  }, [query, emojis])
+  }, [])
   const clickMain = () => setState(s => { return { ...s, open: true } })
   const onClick = (emoji: string) => {
-    setState({ open: false, emoji })
+    // setState({ open: false, emoji })
     router.push({
       pathname: "/",
       query: { emj: Emoji.getIndexOf(emoji) }
