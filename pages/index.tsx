@@ -8,12 +8,12 @@ import styles from '../styles/Home.module.css'
 const Home: NextPage = () => {
   const router = useRouter()
   const query = router.query
-  
+
   const [emojiCeil, setSize] = useState<{ box: number, num: number }>({ box: 100, num: 3 })
-  const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji:"😀" })
+  const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
   useEffect(() => {
     const q = query.emoji as string
-    if (q) setState(s => { return {...s, emoji: q}})
+    if (q) setState(s => { return { ...s, emoji: q } })
     const w = window["innerWidth"] * 0.8
     if (w < 450) {
       return //そのまま
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     setState({ open: false, emoji })
     router.push({
       pathname: "/",
-      query: {emoji}
+      query: { emoji }
     })
   }
   return (
@@ -48,7 +48,9 @@ const Home: NextPage = () => {
         className={styles.emoji}
         onClick={clickMain}
       >
-        {selectState["emoji"]}
+        <p>
+          {selectState["emoji"]}
+        </p>
       </div>
       {selectState["open"] ? <div className={styles.select_wrapper}>
         <div className={styles.emoji_box}>

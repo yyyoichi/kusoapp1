@@ -14,13 +14,32 @@
   width: 100vw; 
   font-size: 70vmin;
   text-align: center;
-  overflow:hidden;
+  overflow: hidden;
   position: absolute;
   top: 50%;
   -webkit-transform : translateY(-50%);
   transform : translateY(-50%);
-}
 
+}
+.emoji > p {
+  margin: 0;
+  position:static;
+  overflow: hidden;
+  /* animation-duration: 3s;
+  animation-name: slidein;
+  animation-timing-function: linear;
+  animation-iteration-count:infinite; */
+  animation: 1s linear 1s infinite alternate slidein;
+}
+/* @-webkit-keyframes move_eye { from { margin-left: -20%; } to { margin-left: 100%; }  } */
+@keyframes slidein {
+  0% {
+    transform: rotate(0.05turn);
+  }
+  100% {
+    transform: rotate(-0.05turn);
+  }
+}
 
 @media (min-width: 500px) {
   .emoji {
