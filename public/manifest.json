@@ -1,0 +1,22 @@
+{
+	"name":				"DEMOJI",
+	"short_name":		"DEMOJI",
+	"description":		"アイコンを大きく表示するだけのくそアプリ。",
+	"start_url":		"/",
+	"display":			"standalone",
+	"orientation":		"portrate-primary",
+	"background_color":	"#fff",
+	"theme_color":		"#fff",
+	"icons": [
+		{
+			"src": "/apple-touch-icon-180x180.png",
+			"sizes": "180x180",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		}
+	]
+}
