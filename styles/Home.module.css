@@ -41,11 +41,10 @@
 }
 
 .emoji_box {
-  margin-top: 10vh;
+  margin-top: 5vh;
   width: 100%;
   
   padding: 0 auto;
-  background-color: aquamarine;
 }
 .emoji_row {
   display: flex;

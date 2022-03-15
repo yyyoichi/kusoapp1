@@ -1,15 +1,20 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Emoji from '../emoji/Emoji'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+  const router = useRouter()
+  const query = router.query
+  
   const [emojiCeil, setSize] = useState<{ box: number, num: number }>({ box: 100, num: 3 })
-  const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
+  const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji:"😀" })
   useEffect(() => {
+    const q = query.emoji as string
+    setState(s => { return {...s, emoji: q}})
     const w = window["innerWidth"] * 0.8
-    console.log(w)
     if (w < 450) {
       return //そのまま
     } else if (w < 900) {
@@ -21,17 +26,20 @@ const Home: NextPage = () => {
       const num = 5
       return setSize({ box: Math.floor(w / num), num })
     }
-  }, [])
+  }, [query])
   const clickMain = () => setState(s => { return { ...s, open: true } })
   const onClick = (emoji: string) => {
     setState({ open: false, emoji })
-    
+    router.push({
+      pathname: "/",
+      query: {emoji}
+    })
   }
   return (
     <div className={styles.wrapper}>
       <Head>
-        <title>DEMOJI</title>
-        <meta name="description" content="アイコンを大きく表示するだけのくそアプリ。" />
+        <title>{`DEMOJI${selectState["emoji"]}`}</title>
+        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。`} />
         <link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon-180x180.png" />
         <link rel="icon" type="image/png" href="/icon-192x192.png" />
         <link rel="icon" href="/favicon.ico" />
