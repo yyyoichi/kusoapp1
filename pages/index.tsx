@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji:"😀" })
   useEffect(() => {
     const q = query.emoji as string
-    setState(s => { return {...s, emoji: q}})
+    if (q) setState(s => { return {...s, emoji: q}})
     const w = window["innerWidth"] * 0.8
     if (w < 450) {
       return //そのまま
