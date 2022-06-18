@@ -1,41 +1,33 @@
-.div {
-  margin: 0;
-}
-
 .wrapper {
   height: 100vh;
   background-color: #cc4125;
-
-  overflow:hidden;
+  overflow: hidden;
 }
 
 
 .emoji {
-  width: 100vw; 
+  width: 100vw;
   font-size: 70vmin;
   text-align: center;
   overflow: hidden;
   position: absolute;
   top: 50%;
-  -webkit-transform : translateY(-50%);
-  transform : translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
 
 }
-.emoji > p {
+
+.emoji>p {
   margin: 0;
-  position:static;
-  overflow: hidden;
-  /* animation-duration: 3s;
-  animation-name: slidein;
-  animation-timing-function: linear;
-  animation-iteration-count:infinite; */
+  position: static;
   animation: 1s linear 1s infinite alternate slidein;
 }
-/* @-webkit-keyframes move_eye { from { margin-left: -20%; } to { margin-left: 100%; }  } */
+
 @keyframes slidein {
   0% {
     transform: rotate(0.05turn);
   }
+
   100% {
     transform: rotate(-0.05turn);
   }
@@ -52,28 +44,28 @@
   height: 80vh;
   border-radius: 30px;
   background-color: aliceblue;
-  
   position: absolute;
   top: 50%;
-  -webkit-transform : translateY(-50%);
-  transform : translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
   overflow-y: auto;
-
 }
 
 
 .emoji_box {
   margin-top: 5vh;
   width: 100%;
-  
-  padding: 0 auto;
-}
-.emoji_row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-around;
+  font-size: 15vw;
+}
+@media (min-width: 500px) {
+  .emoji_box {
+    font-size: 10vw;
+  }
 }
 .emoji_ceil {
   margin: 0;
-  /* font-size: 10vw; */
 }
