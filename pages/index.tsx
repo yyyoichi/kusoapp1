@@ -1,3 +1,6 @@
+import { createCanvas } from 'canvas';
+//@ts-ignore
+import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -23,18 +26,40 @@ const Home: NextPage = () => {
       query: { emj: Emoji.getIndexOf(emoji) }
     })
   }
-
   const canvasRef = useRef(null);
+  const aRef = useRef(null);
   useEffect(() => {
     const canvas: any = canvasRef.current;
     const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
-    // ctx.fillStyle = 'green';
-    // ctx.fillRect(0, 0, 100, 100);
-    ctx.font = "360px serif"
+    ctx.font = "250px serif"
     ctx.textBaseline = "top"
-    // ctx.textAlign = "left"
-    ctx.fillText(selectState.emoji, 0, 0);
-    console.log(ctx.measureText(selectState.emoji))
+    ctx.textAlign = "left"
+    const text = selectState.emoji;
+    const mesure = ctx.measureText(text);
+    console.log(mesure);
+    const x = 0 - Math.abs(mesure.actualBoundingBoxLeft) + 50;
+    const y = 0 - mesure.fontBoundingBoxAscent + 50;
+    const textWidth = mesure.width;
+    const textHeight = mesure.fontBoundingBoxAscent + mesure.actualBoundingBoxDescent;
+    ctx.beginPath();
+    ctx.strokeStyle = "aqua";
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + textWidth, y);
+    ctx.lineTo(x + textWidth, y + textHeight);
+    ctx.lineTo(x, y + textHeight);
+    ctx.lineTo(x, y);
+    ctx.clip();
+    ctx.fillText(text, x, y + (250 * 0.09));
+    const encoder = new GIFEncoder(textWidth, textHeight);
+    encoder.setDelay(500);
+    encoder.start();
+    encoder.addFrame(ctx);
+    encoder.finish();
+    const buffer = encoder.out.getData();
+    console.log(buffer);
+    const blob = new Blob([buffer], {type: "image/gif"});
+    const a: any = aRef.current;
+    a.href = window.URL.createObjectURL(blob);
   }, [selectState])
   return (
     <div className={styles.wrapper}>
@@ -70,7 +95,8 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        {/* <div>ダウンロード</div> */}
+        <div><a ref={aRef} download={selectState.emoji + ".gif"} >ダウンロード</a></div>
+        <canvas width={100} height={100}></canvas>
         <canvas width={500} height={500} ref={canvasRef}></canvas>
       </div>
     </div >
