@@ -1,11 +1,10 @@
-import { createCanvas } from 'canvas';
 import { saveAs } from 'file-saver';
 //@ts-ignore
 import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { default as Emo } from '../emoji/Emoji';
 import styles from '../styles/Home.module.css'
 const Emoji = new Emo()
@@ -28,8 +27,9 @@ const Home: NextPage = () => {
       query: { emj: Emoji.getIndexOf(emoji) }
     })
   }
+  const canvasRef = useRef(null);
   const download = useCallback(() => {
-    const canvas = createCanvas(WIDTH, HEIGHT);
+    const canvas: any = canvasRef.current;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const encoder = new GIFEncoder(WIDTH, HEIGHT);
     const ratio = [0, 6, 6, 6, 6, 4, 2, -2, -4, -6, -6, -6, -6/**0 */, -6, -6, -6, -6, -4, -2, 4, 6, 6, 6, 6];
@@ -101,6 +101,11 @@ const Home: NextPage = () => {
       }
       <div>
         <input type="submit" onClick={download} value="ダウンロード" />
+        <canvas
+          style={{ display: "none" }}
+          width={WIDTH}
+          height={HEIGHT}
+          ref={canvasRef}></canvas>
       </div>
     </div >
   )
