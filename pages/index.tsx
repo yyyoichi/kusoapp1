@@ -1,18 +1,20 @@
-import { createCanvas } from 'canvas';
+import { Canvas, createCanvas } from 'canvas';
+import { saveAs } from 'file-saver';
 //@ts-ignore
 import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { default as Emo } from '../emoji/Emoji';
 import styles from '../styles/Home.module.css'
 const Emoji = new Emo()
+const WIDTH = 340;
+const HEIGHT = 300;
 
 const Home: NextPage = () => {
   const router = useRouter()
   const emjQuery = router.query.emj as string
-
   const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
   useEffect(() => {
     console.log("emoji", emjQuery)
@@ -27,40 +29,40 @@ const Home: NextPage = () => {
     })
   }
   const canvasRef = useRef(null);
-  const aRef = useRef(null);
-  useEffect(() => {
-    const canvas: any = canvasRef.current;
-    const ctx: CanvasRenderingContext2D = canvas.getContext("2d");
+  const download = useCallback(() => {
+    const canvas = createCanvas(WIDTH, HEIGHT);
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const encoder = new GIFEncoder(WIDTH, HEIGHT);
+    encoder.setDelay(400);
+    encoder.start();
     ctx.font = "250px serif"
     ctx.textBaseline = "top"
     ctx.textAlign = "left"
-    const text = selectState.emoji;
-    const mesure = ctx.measureText(text);
-    console.log(mesure);
-    const x = 0 - Math.abs(mesure.actualBoundingBoxLeft) + 50;
-    const y = 0 - mesure.fontBoundingBoxAscent + 50;
-    const textWidth = mesure.width;
-    const textHeight = mesure.fontBoundingBoxAscent + mesure.actualBoundingBoxDescent;
-    ctx.beginPath();
-    ctx.strokeStyle = "aqua";
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + textWidth, y);
-    ctx.lineTo(x + textWidth, y + textHeight);
-    ctx.lineTo(x, y + textHeight);
-    ctx.lineTo(x, y);
-    ctx.clip();
-    ctx.fillText(text, x, y + (250 * 0.09));
-    const encoder = new GIFEncoder(textWidth, textHeight);
-    encoder.setDelay(500);
-    encoder.start();
-    encoder.addFrame(ctx);
+    for (let i = 0; i < 2; i++) {
+      ctx.fillText(selectState.emoji, 0, 16);
+      encoder.addFrame(ctx);
+      ctx.translate(WIDTH / 2, HEIGHT / 2);
+      ctx.rotate(-30 * Math.PI / 180);	
+      ctx.translate(-WIDTH / 2, -HEIGHT / 2);
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    }
     encoder.finish();
     const buffer = encoder.out.getData();
-    console.log(buffer);
-    const blob = new Blob([buffer], {type: "image/gif"});
-    const a: any = aRef.current;
-    a.href = window.URL.createObjectURL(blob);
-  }, [selectState])
+    const blob = new Blob([buffer], { type: "image/gif" });
+    saveAs(blob, `${selectState.emoji}.gif`);
+  }, [selectState.emoji]);
+  // useEffect(() => {
+  //   const canvas = canvasRef.current as unknown as HTMLCanvasElement;
+  //   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+  //   ctx.font = "250px serif"
+  //   ctx.textBaseline = "top"
+  //   ctx.textAlign = "left"
+  //   ctx.fillText(selectState.emoji, 0, 25);
+  //   ctx.translate(WIDTH / 2, HEIGHT / 2);	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
+  //   ctx.rotate(50 * Math.PI / 180);	// 2: 回転を実行し、
+  //   ctx.translate(-WIDTH / 2, -HEIGHT / 2);
+  // }, [selectState])
+
   return (
     <div className={styles.wrapper}>
       <Head>
@@ -95,9 +97,12 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        <div><a ref={aRef} download={selectState.emoji + ".gif"} >ダウンロード</a></div>
-        <canvas width={100} height={100}></canvas>
-        <canvas width={500} height={500} ref={canvasRef}></canvas>
+        <input type="submit" onClick={download} value="ダウンロード" />
+        <canvas
+          style={{ display: "none" }}
+          width={WIDTH}
+          height={HEIGHT}
+          ref={canvasRef}></canvas>
       </div>
     </div >
   )
