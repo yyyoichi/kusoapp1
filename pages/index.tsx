@@ -1,11 +1,11 @@
-import { Canvas, createCanvas } from 'canvas';
+import { createCanvas } from 'canvas';
 import { saveAs } from 'file-saver';
 //@ts-ignore
 import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { CanvasHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { default as Emo } from '../emoji/Emoji';
 import styles from '../styles/Home.module.css'
 const Emoji = new Emo()
@@ -28,23 +28,26 @@ const Home: NextPage = () => {
       query: { emj: Emoji.getIndexOf(emoji) }
     })
   }
-  const canvasRef = useRef(null);
   const download = useCallback(() => {
     const canvas = createCanvas(WIDTH, HEIGHT);
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const encoder = new GIFEncoder(WIDTH, HEIGHT);
-    encoder.setDelay(400);
+    const ratio = [0, 6, 6, 6, 6, 4, 2, -2, -4, -6, -6, -6, -6/**0 */, -6, -6, -6, -6, -4, -2, 4, 6, 6, 6, 6];
+    const delay = 2000 / ratio.length;
+    encoder.setDelay(delay);
     encoder.start();
     ctx.font = "250px serif"
     ctx.textBaseline = "top"
     ctx.textAlign = "left"
-    for (let i = 0; i < 2; i++) {
+    
+    for (const r of ratio) {
       ctx.fillText(selectState.emoji, 0, 16);
       encoder.addFrame(ctx);
       ctx.translate(WIDTH / 2, HEIGHT / 2);
-      ctx.rotate(-30 * Math.PI / 180);	
+      ctx.rotate(r * Math.PI / 180);	
       ctx.translate(-WIDTH / 2, -HEIGHT / 2);
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      console.log(r);
     }
     encoder.finish();
     const buffer = encoder.out.getData();
@@ -98,11 +101,6 @@ const Home: NextPage = () => {
       }
       <div>
         <input type="submit" onClick={download} value="ダウンロード" />
-        <canvas
-          style={{ display: "none" }}
-          width={WIDTH}
-          height={HEIGHT}
-          ref={canvasRef}></canvas>
       </div>
     </div >
   )
