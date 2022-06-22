@@ -39,12 +39,14 @@ const Home: NextPage = () => {
     ctx.font = "250px serif"
     ctx.textBaseline = "top"
     ctx.textAlign = "left"
-    
+
     for (const r of ratio) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillText(selectState.emoji, 0, 16);
       encoder.addFrame(ctx);
       ctx.translate(WIDTH / 2, HEIGHT / 2);
-      ctx.rotate(r * Math.PI / 180);	
+      ctx.rotate(r * Math.PI / 180);
       ctx.translate(-WIDTH / 2, -HEIGHT / 2);
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
       console.log(r);
@@ -54,17 +56,6 @@ const Home: NextPage = () => {
     const blob = new Blob([buffer], { type: "image/gif" });
     saveAs(blob, `${selectState.emoji}.gif`);
   }, [selectState.emoji]);
-  // useEffect(() => {
-  //   const canvas = canvasRef.current as unknown as HTMLCanvasElement;
-  //   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-  //   ctx.font = "250px serif"
-  //   ctx.textBaseline = "top"
-  //   ctx.textAlign = "left"
-  //   ctx.fillText(selectState.emoji, 0, 25);
-  //   ctx.translate(WIDTH / 2, HEIGHT / 2);	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-  //   ctx.rotate(50 * Math.PI / 180);	// 2: 回転を実行し、
-  //   ctx.translate(-WIDTH / 2, -HEIGHT / 2);
-  // }, [selectState])
 
   return (
     <div className={styles.wrapper}>
