@@ -61,7 +61,7 @@ const Home: NextPage = () => {
     <div className={styles.wrapper}>
       <Head>
         <title>{`DEMOJI`}</title>
-        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。`} />
+        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。横にアプリが揺れるだけ。ダウンロード対応。`} />
         <link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon-180x180.png" />
         <link rel="icon" type="image/png" href="/icon-192x192.png" />
         <link rel="icon" href="/favicon.ico" />
