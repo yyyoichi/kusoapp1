@@ -17,7 +17,6 @@ const Home: NextPage = () => {
   const emjQuery = router.query.emj as string
   const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
   useEffect(() => {
-    console.log("emoji", emjQuery)
     if (emjQuery) setState({ open: false, emoji: Emoji.getAt(emjQuery) })
   }, [emjQuery])
 
@@ -61,14 +60,6 @@ const Home: NextPage = () => {
     setDownloading(false);
     console.log("finish");
   }, [selectState.emoji]);
-
-  const [testState, setTest] = useState<boolean>(false);
-  const clickTest = useCallback(() => {
-    setTest(true)
-    setTimeout(() => {
-      setTest(false)
-    },2000)
-  }, [])
   return (
     <div className={styles.wrapper}>
       <Head>
@@ -103,10 +94,6 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        <input type="submit" onClick={clickTest} />
-        {
-          testState ? "処理中" : "クリック"
-        }
         <div className={ downloading ? styles.loadingBox : styles.downloadBox} onClick={download} >
           <Image src={ downloading ? "/image/loading.png" : "/image/download.png"} alt="ダウンロード" width={50} height={50} />
         </div>
