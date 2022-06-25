@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver';
 import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Image from 'next/image';
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { default as Emo } from '../emoji/Emoji';
@@ -16,7 +17,6 @@ const Home: NextPage = () => {
   const emjQuery = router.query.emj as string
   const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
   useEffect(() => {
-    console.log("emoji", emjQuery)
     if (emjQuery) setState({ open: false, emoji: Emoji.getAt(emjQuery) })
   }, [emjQuery])
 
@@ -28,7 +28,9 @@ const Home: NextPage = () => {
     })
   }
   const canvasRef = useRef(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const download = useCallback(() => {
+    console.log("create");
     const canvas: any = canvasRef.current;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const encoder = new GIFEncoder(WIDTH, HEIGHT);
@@ -39,38 +41,33 @@ const Home: NextPage = () => {
     ctx.font = "250px serif"
     ctx.textBaseline = "top"
     ctx.textAlign = "left"
-    
+
     for (const r of ratio) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillText(selectState.emoji, 0, 16);
       encoder.addFrame(ctx);
       ctx.translate(WIDTH / 2, HEIGHT / 2);
-      ctx.rotate(r * Math.PI / 180);	
+      ctx.rotate(r * Math.PI / 180);
       ctx.translate(-WIDTH / 2, -HEIGHT / 2);
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
-      console.log(r);
     }
     encoder.finish();
     const buffer = encoder.out.getData();
     const blob = new Blob([buffer], { type: "image/gif" });
     saveAs(blob, `${selectState.emoji}.gif`);
+    console.log("finish");
+    setLoading(false);
   }, [selectState.emoji]);
-  // useEffect(() => {
-  //   const canvas = canvasRef.current as unknown as HTMLCanvasElement;
-  //   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-  //   ctx.font = "250px serif"
-  //   ctx.textBaseline = "top"
-  //   ctx.textAlign = "left"
-  //   ctx.fillText(selectState.emoji, 0, 25);
-  //   ctx.translate(WIDTH / 2, HEIGHT / 2);	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-  //   ctx.rotate(50 * Math.PI / 180);	// 2: 回転を実行し、
-  //   ctx.translate(-WIDTH / 2, -HEIGHT / 2);
-  // }, [selectState])
-
+  useEffect(() => {
+    if(!loading) return ;
+    setTimeout(download, 500);
+  }, [loading, download]);
   return (
     <div className={styles.wrapper}>
       <Head>
         <title>{`DEMOJI`}</title>
-        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。`} />
+        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。横にアプリが揺れるだけ。ダウンロード対応。`} />
         <link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon-180x180.png" />
         <link rel="icon" type="image/png" href="/icon-192x192.png" />
         <link rel="icon" href="/favicon.ico" />
@@ -100,7 +97,20 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        <input type="submit" onClick={download} value="ダウンロード" />
+        <div className={loading ? styles.loadingBox : styles.downloadBox} onClick={() => setLoading(true)} >
+          {
+            loading ? <Image
+              src={"/image/loading.png"}
+              alt="ローディング"
+              width={50}
+              height={50} /> : <Image
+              src={"/image/download.png"}
+              alt={"ダウンロード"}
+              width={50}
+              height={50}
+            />
+          }
+        </div>
         <canvas
           style={{ display: "none" }}
           width={WIDTH}
