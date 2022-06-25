@@ -28,9 +28,9 @@ const Home: NextPage = () => {
     })
   }
   const canvasRef = useRef(null);
-  const [downloading, setDownloading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const download = useCallback(() => {
-    setDownloading(true);
+    console.log("create");
     const canvas: any = canvasRef.current;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const encoder = new GIFEncoder(WIDTH, HEIGHT);
@@ -51,15 +51,18 @@ const Home: NextPage = () => {
       ctx.rotate(r * Math.PI / 180);
       ctx.translate(-WIDTH / 2, -HEIGHT / 2);
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
-      console.log(r);
     }
     encoder.finish();
     const buffer = encoder.out.getData();
     const blob = new Blob([buffer], { type: "image/gif" });
     saveAs(blob, `${selectState.emoji}.gif`);
-    setDownloading(false);
     console.log("finish");
+    setLoading(false);
   }, [selectState.emoji]);
+  useEffect(() => {
+    if(!loading) return ;
+    setTimeout(download, 500);
+  }, [loading, download]);
   return (
     <div className={styles.wrapper}>
       <Head>
@@ -94,8 +97,19 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        <div className={ downloading ? styles.loadingBox : styles.downloadBox} onClick={download} >
-          <Image src={ downloading ? "/image/loading.png" : "/image/download.png"} alt="ダウンロード" width={50} height={50} />
+        <div className={loading ? styles.loadingBox : styles.downloadBox} onClick={() => setLoading(true)} >
+          {
+            loading ? <Image
+              src={"/image/loading.png"}
+              alt="ローディング"
+              width={50}
+              height={50} /> : <Image
+              src={"/image/download.png"}
+              alt={"ダウンロード"}
+              width={50}
+              height={50}
+            />
+          }
         </div>
         <canvas
           style={{ display: "none" }}
