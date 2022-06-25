@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver';
 import GIFEncoder from "gif-encoder-2";
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Image from 'next/image';
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { default as Emo } from '../emoji/Emoji';
@@ -28,7 +29,9 @@ const Home: NextPage = () => {
     })
   }
   const canvasRef = useRef(null);
+  const [downloading, setDownloading] = useState<boolean>(false);
   const download = useCallback(() => {
+    setDownloading(true);
     const canvas: any = canvasRef.current;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const encoder = new GIFEncoder(WIDTH, HEIGHT);
@@ -55,8 +58,17 @@ const Home: NextPage = () => {
     const buffer = encoder.out.getData();
     const blob = new Blob([buffer], { type: "image/gif" });
     saveAs(blob, `${selectState.emoji}.gif`);
+    setDownloading(false);
+    console.log("finish");
   }, [selectState.emoji]);
 
+  const [testState, setTest] = useState<boolean>(false);
+  const clickTest = useCallback(() => {
+    setTest(true)
+    setTimeout(() => {
+      setTest(false)
+    },2000)
+  }, [])
   return (
     <div className={styles.wrapper}>
       <Head>
@@ -91,7 +103,13 @@ const Home: NextPage = () => {
           : <></>
       }
       <div>
-        <input type="submit" onClick={download} value="ダウンロード" />
+        <input type="submit" onClick={clickTest} />
+        {
+          testState ? "処理中" : "クリック"
+        }
+        <div className={ downloading ? styles.loadingBox : styles.downloadBox} onClick={download} >
+          <Image src={ downloading ? "/image/loading.png" : "/image/download.png"} alt="ダウンロード" width={50} height={50} />
+        </div>
         <canvas
           style={{ display: "none" }}
           width={WIDTH}

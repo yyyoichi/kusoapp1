@@ -61,11 +61,54 @@
   justify-content: space-around;
   font-size: 15vw;
 }
+
 @media (min-width: 500px) {
   .emoji_box {
     font-size: 10vw;
   }
 }
+
 .emoji_ceil {
   margin: 0;
+}
+
+.downloadBox {
+  position: fixed;
+  /* top: 50px; */
+  right: 50px;
+  cursor: pointer;
+  animation: 2s linear infinite toButton;
+}
+
+@keyframes toButton {
+  0% {
+    top: 50px;
+  }
+  10% {
+    top: 55px;
+  }
+  20% {
+    top: 50px;
+  }
+
+  100% {
+    top: 50px;
+  }
+}
+
+.loadingBox {
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  animation: 2s linear infinite rotation;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
