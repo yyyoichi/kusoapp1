@@ -6,25 +6,20 @@ import Head from 'next/head'
 import Image from 'next/image';
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { default as Emo } from '../emoji/Emoji';
 import styles from '../styles/Home.module.css'
-const Emoji = new Emo()
-const WIDTH = 340;
+const WIDTH = 300;
 const HEIGHT = 300;
 
 const Home: NextPage = () => {
   const router = useRouter()
-  const emjQuery = router.query.emj as string
-  const [selectState, setState] = useState<{ open: boolean, emoji: string }>({ open: false, emoji: "😀" })
-  useEffect(() => {
-    if (emjQuery) setState({ open: false, emoji: Emoji.getAt(emjQuery) })
-  }, [emjQuery])
+  const [value, setValue] = useState<string>("危険！")
 
-  const clickMain = () => setState(s => { return { ...s, open: true } })
-  const onClick = (emoji: string) => {
+  // const clickMain = () => setState(s => { return { ...s, open: true } })
+  const onChange = (v: string) => {
+    setValue(v)
     router.push({
-      pathname: "/",
-      query: { emj: Emoji.getIndexOf(emoji) }
+      pathname: "/coution",
+      query: { value: v }
     })
   }
   const canvasRef = useRef(null);
@@ -45,7 +40,7 @@ const Home: NextPage = () => {
     for (const r of ratio) {
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
-      ctx.fillText(selectState.emoji, 0, 16);
+      ctx.fillText(value, 0, 16);
       encoder.addFrame(ctx);
       ctx.translate(WIDTH / 2, HEIGHT / 2);
       ctx.rotate(r * Math.PI / 180);
@@ -55,64 +50,41 @@ const Home: NextPage = () => {
     encoder.finish();
     const buffer = encoder.out.getData();
     const blob = new Blob([buffer], { type: "image/gif" });
-    saveAs(blob, `${selectState.emoji}.gif`);
+    saveAs(blob, `${value}.gif`);
     console.log("finish");
     setLoading(false);
-  }, [selectState.emoji]);
+  }, [value]);
   useEffect(() => {
-    if(!loading) return ;
+    if (!loading) return;
     setTimeout(download, 500);
   }, [loading, download]);
   return (
     <div className={styles.wrapper}>
       <Head>
-        <title>{`DEMOJI`}</title>
-        <meta name="description" content={`アイコン${selectState["emoji"]}を大きく表示するだけのくそアプリ。横にアプリが揺れるだけ。ダウンロード対応。`} />
+        <title>{`DEMOJI/Coution!`}</title>
+        <meta name="description" content={`危険な行為にイエローカード。飲み過ぎのあの先輩に。`} />
         <link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon-180x180.png" />
         <link rel="icon" type="image/png" href="/icon-192x192.png" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div
-        className={styles.emoji}
-        onClick={clickMain}
-      >
-        <p>
-          {selectState["emoji"]}
-        </p>
+      <div className={loading ? styles.loadingBox : styles.downloadBox} onClick={() => setLoading(true)} >
+        {
+          loading ? <Image
+            src={"/image/loading.png"}
+            alt="ローディング"
+            width={50}
+            height={50} /> : <Image
+            src={"/image/download.png"}
+            alt={"ダウンロード"}
+            width={50}
+            height={50}
+          />
+        }
       </div>
-      {
-        selectState["open"] ? <div className={styles.select_wrapper}>
-          <div className={styles.emoji_box}>
-            {
-              Emo.JI.map((x, i) => <div
-                onClick={() => onClick(x)}
-                key={i}
-              >
-                {x}
-              </div>
-              )
-            }
-          </div>
-        </div>
-          : <></>
-      }
       <div>
-        <div className={loading ? styles.loadingBox : styles.downloadBox} onClick={() => setLoading(true)} >
-          {
-            loading ? <Image
-              src={"/image/loading.png"}
-              alt="ローディング"
-              width={50}
-              height={50} /> : <Image
-              src={"/image/download.png"}
-              alt={"ダウンロード"}
-              width={50}
-              height={50}
-            />
-          }
-        </div>
+        <input type="text" value={value} style={{fontSize: "24px"}} onChange={e => onChange(e.target.value)}/>
         <canvas
-          style={{ display: "none" }}
+          // style={{ display: "none" }}
           width={WIDTH}
           height={HEIGHT}
           ref={canvasRef}></canvas>
