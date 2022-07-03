@@ -41,6 +41,12 @@ const Home: NextPage = () => {
       ctx.drawImage(image, 250, 240, 50, 50)
     }
   }, [])
+  useEffect(() => {
+    const canvas: any = canvasRef.current;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    ctx.clearRect(0, 50, 300, 200)
+    ctx.fillText(value, 10, 150)
+  }, [value])
   const [loading, setLoading] = useState<boolean>(false);
   return (
     <div className={styles.wrapper}>
