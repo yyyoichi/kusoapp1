@@ -7,6 +7,7 @@ import {default as NextImage } from 'next/image';
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../styles/Home.module.css'
+import {default as THREE} from "three"
 const WIDTH = 300;
 const HEIGHT = 300;
 
@@ -20,11 +21,12 @@ const Home: NextPage = () => {
       query: { value: v }
     })
   }
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const image = new Image()
     image.src = "/image/coution.png"
-    const canvas: any = canvasRef.current;
+    const canvas = canvasRef.current as HTMLCanvasElement;
+    // const 
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     image.onload = () => {
       ctx.drawImage(image, 0, 10, 50, 50)
@@ -41,6 +43,12 @@ const Home: NextPage = () => {
       ctx.drawImage(image, 250, 240, 50, 50)
     }
   }, [])
+  useEffect(() => {
+    const canvas: any = canvasRef.current;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    ctx.clearRect(0, 50, 300, 200)
+    ctx.fillText(value, 10, 150)
+  }, [value])
   const [loading, setLoading] = useState<boolean>(false);
   return (
     <div className={styles.wrapper}>
